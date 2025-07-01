@@ -1,7 +1,7 @@
 
 const express = require('express');
-const multer = require('multer'); // ספרייה שמטפלת בהעלאת קבצים
-const cors = require('cors');   // ספרייה שמאפשרת לדפדפן לדבר עם השרת
+const multer = require('multer'); 
+const cors = require('cors');  
 const path = require('path');
 
 const app = express();
