@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <title>יצירת טיוטת Outlook</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 600px; margin: 40px auto; padding: 20px; border: 1px solid #ccc; border-radius: 8px; }
+        label { display: block; margin-top: 15px; }
+        input, textarea, button { width: 100%; padding: 8px; margin-top: 5px; box-sizing: border-box; }
+        button { background-color: #0078d4; color: white; border: none; cursor: pointer; font-size: 16px; margin-top: 20px; }
+        button:hover { background-color: #005a9e; }
+        #status { margin-top: 15px; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <h1>יצירת טיוטות ב-Outlook</h1>
+    <form id="outlookForm">
+        <label for="to">נמען / נמענים:</label>
+        <input type="text" id="to" name="to" required>
+
+        <label for="subject">נושא:</label>
+        <input type="text" id="subject" name="subject" required>
+
+        <label for="body">גוף ההודעה:</label>
+        <textarea id="body" name="body" rows="8"></textarea>
+
+        <label for="attachment">קורות חיים:</label>
+        <input type="file" id="attachment" name="attachment" required>
+
+        <button type="submit">צור ופתח טיוטות ב-Outlook</button>
+    </form>
+    <div id="status"></div>
+
+<script>
+    const form = document.getElementById('outlookForm');
+    const statusDiv = document.getElementById('status');
+    const serverUrl = 'http://localhost:3000';
+
+    form.addEventListener('submit', async function(event) {
+        event.preventDefault();
+        statusDiv.textContent = 'מעבד בקשה...';
+
+        const formData = new FormData(form);
+        let fileId = null;
+
+        // שלב 1: העלאת הקובץ לשרת
+        try {
+            const response = await fetch(`${serverUrl}/upload`, {
+                method: 'POST',
+                body: formData
+            });
+
+            if (!response.ok) {
+                throw new Error('Upload failed');
+            }
+
+            const result = await response.json();
+            fileId = result.fileId;
+            statusDiv.textContent = 'הקובץ הועלה בהצלחה. יוצר טיוטות...';
+
+        } catch (error) {
+            statusDiv.textContent = 'שגיאה בהעלאת הקובץ. ודא שהשרת רץ.';
+            console.error('Error:', error);
+            return;
+        }
+
+        // שלב 2: בניית ה-URL המותאם אישית והפעלתו
+        if (fileId) {
+            const to = document.getElementById('to').value;
+            const subject = document.getElementById('subject').value;
+            const body = document.getElementById('body').value;
+            
+            // יצירת אובייקט עם הנתונים מהטופס
+            const mailData = {
+                To: to.split(',').map(email => email.trim()),
+                Subject: subject,
+                Body: body.replace(/\n/g, '<br>'),
+                AttachmentUrl: `${serverUrl}/download/${fileId}`
+            };
+
+            const jsonString = JSON.stringify(mailData);
+            // שימוש בקידוד נכון שתומך גם בעברית
+            const base64String = btoa(unescape(encodeURIComponent(jsonString)));
+            
+            const customUrl = `cvmail://draft?data=${base64String}`;
+            
+            // במקום לשנות את כתובת החלון, ניצור קישור וירטואלי ונלחץ עליו
+            const link = document.createElement('a');
+            link.href = customUrl;
+            document.body.appendChild(link); // הוספה לדף
+            link.click(); // הדמיית לחיצה
+            document.body.removeChild(link); // הסרה מהדףן
+            
+            statusDiv.textContent = 'הבקשה נשלחה ל-Outlook.';
+        }
+    });
+</script>
+</body>
+</html>

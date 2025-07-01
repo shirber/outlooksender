@@ -1,0 +1,18 @@
+# Node.js dependencies
+node_modules/
+npm-debug.log
+package-lock.json
+
+# Visual Studio / C# build output
+bin/
+obj/
+.vs/
+*.suo
+*.user
+
+# Runtime generated files
+uploads/
+
+# OS generated files
+.DS_Store
+Thumbs.db

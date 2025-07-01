@@ -1,0 +1,12 @@
+Windows Registry Editor Version 5.00
+
+[HKEY_CURRENT_USER\Software\Classes\cvmail]
+@="URL:CvMail Protocol"
+"URL Protocol"=""
+
+[HKEY_CURRENT_USER\Software\Classes\cvmail\shell]
+
+[HKEY_CURRENT_USER\Software\Classes\cvmail\shell\open]
+
+[HKEY_CURRENT_USER\Software\Classes\cvmail\shell\open\command]
+@="\"C:\\Users\\User\\Desktop\\outlooksender\\CvMailHelper\\CvMailHelper\\bin\\Debug\\net8.0\\CvMailHelper.exe\" \"%1\""
